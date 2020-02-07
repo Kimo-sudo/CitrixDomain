@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Interfaces;
 using Domain.Entities;
+using Domain.Entities.KoffieBattle;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Persistence
@@ -16,6 +17,8 @@ namespace Infra.Persistence
         }
 
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<KoffieBattle> KoffieBattleData { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CitrixDbContext).Assembly);
