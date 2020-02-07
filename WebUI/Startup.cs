@@ -31,6 +31,7 @@ namespace WebUI
             services.AddControllersWithViews();
             services.AddApplication();
             services.AddInfrastructure(Configuration);
+            services.AddSwaggerDocument();
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -59,6 +60,8 @@ namespace WebUI
             {
                 app.UseSpaStaticFiles();
             }
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseRouting();
 
