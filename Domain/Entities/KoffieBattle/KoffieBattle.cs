@@ -1,7 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Enum;
 
-namespace Domain.Entities.KoffieBattle
+namespace Domain.Entities
 {
     public class KoffieBattle : TimePersonEntity
     {

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using Application.Common.Interfaces;
 using Domain.Entities;
 using Domain.Enum;
-using Domain.Entities.KoffieBattle;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.KoffieBattle.Commands
+namespace Application.KoffieBattles.Commands
 {
     public class AddKoffieBattleDataCommand : IRequest<string>
     {
@@ -36,11 +35,11 @@ namespace Application.KoffieBattle.Commands
                 var manager = await _context.Employees.FirstOrDefaultAsync(x => x.FirstName + x.LastName == request.VerstuurdDoor, cancellationToken);
                 if (manager == null)
                 {
-                    return $"Kan geen manager vinden die { request.VerstuurdDoor } heet, probeer het opnieuw";
+                    return $"Kan geen manager met de naam : { request.VerstuurdDoor }, probeer het opnieuw";
                 }
                 else
                 {
-                    var entity = new Domain.Entities.KoffieBattle.KoffieBattle
+                    var entity = new KoffieBattle
                     {
                         Id = request.Id,
                         GroteKoffie = request.GroteKoffie,
@@ -51,7 +50,7 @@ namespace Application.KoffieBattle.Commands
                     };
                     _context.KoffieBattleData.Add(entity);
                     await _context.SaveChangesAsync(cancellationToken);
-                    return $"Je gegevens worden verwerkt.";
+                    return $"Je gegevens zijn verwerkt!";
                 }
             }
         }
