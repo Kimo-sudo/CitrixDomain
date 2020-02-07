@@ -9,7 +9,8 @@ namespace Application.Common.Interfaces
         public interface ICitrixDbContext
         {
             DbSet<Employee> Employees { get; set; }
+            Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 
-        }
+    }
     
 }

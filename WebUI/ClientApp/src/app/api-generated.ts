@@ -16,6 +16,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IEmployeeService {
     getAllEmployees(): Observable<Employee[]>;
+    createEmployee(command: CreateEmployeeCommand): Observable<number>;
 }
 
 @Injectable()
@@ -80,6 +81,58 @@ export class EmployeeService implements IEmployeeService {
         }
         return _observableOf<Employee[]>(<any>null);
     }
+
+    createEmployee(command: CreateEmployeeCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/Employee";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateEmployee(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateEmployee(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateEmployee(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
 }
 
 export class Employee implements IEmployee {
@@ -125,6 +178,50 @@ export class Employee implements IEmployee {
 
 export interface IEmployee {
     employeeId: number;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    phoneNumber: number;
+}
+
+export class CreateEmployeeCommand implements ICreateEmployeeCommand {
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    phoneNumber!: number;
+
+    constructor(data?: ICreateEmployeeCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNumber = _data["phoneNumber"];
+        }
+    }
+
+    static fromJS(data: any): CreateEmployeeCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateEmployeeCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNumber"] = this.phoneNumber;
+        return data; 
+    }
+}
+
+export interface ICreateEmployeeCommand {
     firstName?: string | undefined;
     lastName?: string | undefined;
     phoneNumber: number;
