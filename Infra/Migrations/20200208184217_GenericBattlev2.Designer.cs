@@ -4,14 +4,16 @@ using Infra.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Migrations
 {
     [DbContext(typeof(CitrixDbContext))]
-    partial class CitrixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200208184217_GenericBattlev2")]
+    partial class GenericBattlev2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,17 +57,17 @@ namespace Infra.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("FranchiseBattleId")
+                    b.Property<int?>("CurrentBattleId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GegevensId")
+                    b.Property<int?>("FranchiseBattleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FranchiseBattleId");
+                    b.HasIndex("CurrentBattleId");
 
-                    b.HasIndex("GegevensId");
+                    b.HasIndex("FranchiseBattleId");
 
                     b.ToTable("InputBattleData");
                 });
@@ -124,13 +126,13 @@ namespace Infra.Migrations
 
             modelBuilder.Entity("Domain.Entities.BattleInput", b =>
                 {
-                    b.HasOne("Domain.Entities.FranchiseBattle", null)
-                        .WithMany("RestaurantInput")
-                        .HasForeignKey("FranchiseBattleId");
-
-                    b.HasOne("Domain.Entities.Battle.KoffieBattle", "Gegevens")
+                    b.HasOne("Domain.Entities.Battle.KoffieBattle", "CurrentBattle")
                         .WithMany()
-                        .HasForeignKey("GegevensId");
+                        .HasForeignKey("CurrentBattleId");
+
+                    b.HasOne("Domain.Entities.FranchiseBattle", null)
+                        .WithMany("CurrentBattleInput")
+                        .HasForeignKey("FranchiseBattleId");
                 });
 #pragma warning restore 612, 618
         }

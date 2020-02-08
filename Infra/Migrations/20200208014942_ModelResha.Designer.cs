@@ -4,14 +4,16 @@ using Infra.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Migrations
 {
     [DbContext(typeof(CitrixDbContext))]
-    partial class CitrixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200208014942_ModelResha")]
+    partial class ModelResha
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,7 @@ namespace Infra.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Domain.Entities.Battle.KoffieBattle", b =>
+            modelBuilder.Entity("Domain.Entities.Battle.BattleInput", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,6 +32,9 @@ namespace Infra.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("GroteKoffie")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("KoffieBattleId")
                         .HasColumnType("int");
 
                     b.Property<int>("MediumKoffie")
@@ -43,31 +48,11 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("KoffieBattleId");
+
                     b.HasIndex("VerstuurdDoorEmployeeId");
 
-                    b.ToTable("KoffieBattle");
-                });
-
-            modelBuilder.Entity("Domain.Entities.BattleInput", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("FranchiseBattleId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("GegevensId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FranchiseBattleId");
-
-                    b.HasIndex("GegevensId");
-
-                    b.ToTable("InputBattleData");
+                    b.ToTable("KoffieBattleInput");
                 });
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
@@ -97,40 +82,27 @@ namespace Infra.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Domain.Entities.FranchiseBattle", b =>
+            modelBuilder.Entity("Domain.Entities.KoffieBattle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Month")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.ToTable("FranchiseBattle");
+                    b.ToTable("KoffieBattle");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Battle.KoffieBattle", b =>
+            modelBuilder.Entity("Domain.Entities.Battle.BattleInput", b =>
                 {
+                    b.HasOne("Domain.Entities.KoffieBattle", null)
+                        .WithMany("CurrentInput")
+                        .HasForeignKey("KoffieBattleId");
+
                     b.HasOne("Domain.Entities.Employee", "VerstuurdDoor")
                         .WithMany()
                         .HasForeignKey("VerstuurdDoorEmployeeId");
-                });
-
-            modelBuilder.Entity("Domain.Entities.BattleInput", b =>
-                {
-                    b.HasOne("Domain.Entities.FranchiseBattle", null)
-                        .WithMany("RestaurantInput")
-                        .HasForeignKey("FranchiseBattleId");
-
-                    b.HasOne("Domain.Entities.Battle.KoffieBattle", "Gegevens")
-                        .WithMany()
-                        .HasForeignKey("GegevensId");
                 });
 #pragma warning restore 612, 618
         }

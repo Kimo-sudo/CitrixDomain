@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Interfaces;
 using Domain.Entities;
+using Domain.Entities.Battle;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -39,16 +40,16 @@ namespace Application.KoffieBattles.Commands
                 }
                 else
                 {
-                    var entity = new KoffieBattle
+                    var entity = new KoffieBattle()
                     {
                         Id = request.Id,
-                        GroteKoffie = request.GroteKoffie,
-                        MediumKoffie = request.MediumKoffie,
-                        Restaurant = request.Restaurant,
                         DatumVerstuurd = DateTime.Now,
+                        GroteKoffie = request.GroteKoffie, 
+                        MediumKoffie = request.MediumKoffie, 
+                        Restaurant =  manager.Restaurant,
                         VerstuurdDoor = manager
                     };
-                    _context.KoffieBattleData.Add(entity);
+                    _context.KoffieBattle.Add(entity);
                     await _context.SaveChangesAsync(cancellationToken);
                     return $"Je gegevens zijn verwerkt!";
                 }

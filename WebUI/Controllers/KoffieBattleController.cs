@@ -12,7 +12,7 @@ namespace WebUI.Controllers
     public class KoffieBattleController : ApiController
     {
         [HttpGet]
-        public async Task<ActionResult<List<KoffieBattle>>> GetKoffieBattleData_CurrentMonth()
+        public async Task<ActionResult<List<FranchiseBattle>>> GetKoffieBattleData_CurrentMonth()
         {
             return await Mediator.Send(new GetCurrentMonthQuery());
         }

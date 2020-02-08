@@ -11,10 +11,10 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.KoffieBattles.Queries
 {
-    public class GetCurrentMonthQuery : IRequest<List<KoffieBattle>>
+    public class GetCurrentMonthQuery : IRequest<List<FranchiseBattle>>
     {
         public class
-            GetCurrentMonthQueryHandler : IRequestHandler<GetCurrentMonthQuery, List<KoffieBattle>>
+            GetCurrentMonthQueryHandler : IRequestHandler<GetCurrentMonthQuery, List<FranchiseBattle>>
         {
             private readonly ICitrixDbContext _context;
 
@@ -23,10 +23,14 @@ namespace Application.KoffieBattles.Queries
                 _context = context;
             }
 
-            public async Task<List<KoffieBattle>> Handle(GetCurrentMonthQuery request, CancellationToken cancellationToken)
+            public async Task<List<FranchiseBattle>> Handle(GetCurrentMonthQuery request, CancellationToken cancellationToken)
             {
-                var result = await _context.KoffieBattleData.ToListAsync(cancellationToken);
-
+                var result =
+                    await _context.GenericBattle
+                        .Include(x => x.RestaurantInput)
+                        .ThenInclude(x => x.Gegevens)
+                        .ThenInclude(x => x.VerstuurdDoor)
+                        .ToListAsync(cancellationToken);
                 return result;
             }
         }
